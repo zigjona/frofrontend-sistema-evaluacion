@@ -13,6 +13,7 @@ const GraficoPorPregunta = ({ preguntaId, tipo }) => {
     axios.get(`http://localhost:4000/api/respuestas/agrupado/${preguntaId}`)
       .then((res) => {
         const formateado = res.data.map((item, i) => ({
+          
           nombre: `Trimestral ${i + 1}`,
           valor: tipo === 'porcentaje' ? item.promedioPorcentaje : item.promedioValor,
         }));
