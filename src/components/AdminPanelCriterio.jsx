@@ -60,8 +60,8 @@ const AdminPanelCriterio = () => {
       return;
     }
     const url = editandoId
-      ? `http://localhost:4000/api/criterios/${editandoId}`
-      : 'http://localhost:4000/api/criterios';
+      ? `https://backend-sistema-evaluacion.onrender.com/api/criterios/${editandoId}`
+      : 'https://backend-sistema-evaluacion.onrender.com/api/criterios';
 
     const metodo = editandoId ? 'PUT' : 'POST';
 
@@ -102,7 +102,7 @@ const AdminPanelCriterio = () => {
   const eliminarCriterio = async (id) => {
     if (!window.confirm('¿Seguro que deseas eliminar este criterio?')) return;
 
-    const res = await fetch(`http://localhost:4000/api/criterios/${id}`, {
+    const res = await fetch(`https://backend-sistema-evaluacion.onrender.com/api/criterios/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
     });

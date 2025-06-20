@@ -10,7 +10,7 @@ export default function AdminPanelCrearUsuario() {
 
   const crearUsuario = async () => {
     try {
-      await axios.post('http://localhost:4000/api/usuarios', {
+      await axios.post('https://backend-sistema-evaluacion.onrender.com/api/usuarios', {
         nombre,
         correo,
         password,

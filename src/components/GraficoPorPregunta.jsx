@@ -4,13 +4,13 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'r
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 
-const GraficoPorPregunta = ({ preguntaId, tipo }) => {
+const GraficoPorPregunta = ({ preguntaId, tipo, actualizar}) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    if (!preguntaId || !tipo === 'texto') return;// <-- aquí excluyes preguntas de tipo texto
+    if (!preguntaId || tipo === 'texto') return;// <-- aquí excluyes preguntas de tipo texto
 
-    axios.get(`http://localhost:4000/api/respuestas/agrupado/${preguntaId}`)
+    axios.get(`https://backend-sistema-evaluacion.onrender.com/api/respuestas/agrupado/${preguntaId}`)
       .then((res) => {
         const formateado = res.data.map((item, i) => ({
           
@@ -20,7 +20,7 @@ const GraficoPorPregunta = ({ preguntaId, tipo }) => {
         setData(formateado);
       })
       .catch((err) => console.error("❌ Error al obtener datos:", err));
-  }, [preguntaId, tipo]);
+  }, [preguntaId, tipo, actualizar]);
 
   if (tipo === 'texto') return null; // <-- Esto evita renderizar el gráfico si es texto
 

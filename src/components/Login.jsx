@@ -9,7 +9,9 @@ const Login = ({ onLogin }) => {
     e.preventDefault();
 
     try {
-      const res = await fetch('http://localhost:4000/api/auth/login', {
+     //const res = await fetch('http://localhost:4000/api/auth/login',
+        const res = await fetch('https://backend-sistema-evaluacion.onrender.com/api/auth/login',
+        {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ correo, password }),
@@ -19,6 +21,7 @@ const Login = ({ onLogin }) => {
       if (res.ok) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('rol', data.rol);
+        localStorage.setItem('nombreUsuario', data.nombre); //  Se guarda el nombre
         onLogin(data.rol);
       } else {
         alert(data.mensaje || 'Error al iniciar sesión');

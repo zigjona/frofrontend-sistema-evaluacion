@@ -13,14 +13,14 @@ const AdminPanelIndicador = () => {
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    fetch('http://localhost:4000/api/facultades')
+    fetch('https://backend-sistema-evaluacion.onrender.com/api/facultades')
       .then(res => res.json())
       .then(data => setFacultades(data));
   }, []);
 
   useEffect(() => {
     if (facultadId) {
-      fetch(`http://localhost:4000/api/criterios/porFacultad/${facultadId}`)
+      fetch(`https://backend-sistema-evaluacion.onrender.com/api/criterios/porFacultad/${facultadId}`)
         .then(res => res.json())
         .then(data => setCriterios(data));
     } else {
@@ -30,7 +30,7 @@ const AdminPanelIndicador = () => {
 
   useEffect(() => {
     if (criterioId) {
-      fetch(`http://localhost:4000/api/indicadores/porCriterio/${criterioId}`)
+      fetch(`https://backend-sistema-evaluacion.onrender.com/api/indicadores/porCriterio/${criterioId}`)
         .then(res => res.json())
         .then(data => setIndicadores(data));
     } else {
@@ -45,8 +45,8 @@ const AdminPanelIndicador = () => {
     }
 
     const url = editandoId
-      ? `http://localhost:4000/api/indicadores/${editandoId}`
-      : 'http://localhost:4000/api/indicadores';
+      ? `https://backend-sistema-evaluacion.onrender.com/api/indicadores/${editandoId}`
+      : 'https://backend-sistema-evaluacion.onrender.com/api/indicadores';
 
     const metodo = editandoId ? 'PUT' : 'POST';
 
@@ -69,7 +69,7 @@ const AdminPanelIndicador = () => {
       setMensaje(editandoId ? 'Indicador actualizado.' : 'Indicador creado.');
       setNombreIndicador('');
       setEditandoId(null);
-      fetch(`http://localhost:4000/api/indicadores/porCriterio/${criterioId}`)
+      fetch(`https://backend-sistema-evaluacion.onrender.com/api/indicadores/porCriterio/${criterioId}`)
         .then(res => res.json())
         .then(data => setIndicadores(data))
         .catch(error => {
@@ -89,14 +89,14 @@ const AdminPanelIndicador = () => {
   const eliminarIndicador = async (id) => {
     if (!window.confirm('¿Eliminar este indicador?')) return;
 
-    const res = await fetch(`http://localhost:4000/api/indicadores/${id}`, {
+    const res = await fetch(`https://backend-sistema-evaluacion.onrender.com/api/indicadores/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
     });
 
     if (res.ok) {
       setMensaje('Indicador eliminado.');
-      fetch(`http://localhost:4000/api/indicadores/porCriterio/${criterioId}`)
+      fetch(`https://backend-sistema-evaluacion.onrender.com/api/indicadores/porCriterio/${criterioId}`)
         .then(res => res.json())
         .then(data => setIndicadores(data));
     } else {

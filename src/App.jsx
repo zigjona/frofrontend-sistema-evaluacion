@@ -10,7 +10,7 @@ import TablaJerarquica from './components/TablaJerarquica.jsx';
 import AdminPanelCrearPregunta from './components/AdminPanelCrearPregunta.jsx';
 import AdminPanelCrearRespuesta from './components/AdminPanelCrearRespuesta.jsx';
 import AdminPanelCrearUsuario from './components/AdminPanelCrearUsuario.jsx';
-
+import AdminPanelRespuestasRegistradas from './components/AdminPanelRespuestasRegistradas.jsx';
 
 function App() {
   const [rol, setRol] = useState(localStorage.getItem('rol') || '');
@@ -57,6 +57,7 @@ function App() {
             <Route path="crearPreguntaApp" element={<AdminPanelCrearPregunta />} />
             <Route path="crearRespuestaApp" element={<AdminPanelCrearRespuesta />} />
             <Route path="crearUsuarioApp" element={<AdminPanelCrearUsuario />} />
+            <Route path="respuestasRegistradasApp" element={<AdminPanelRespuestasRegistradas />} />
           </Route>
         )}
       </Routes>

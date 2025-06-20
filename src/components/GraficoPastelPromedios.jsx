@@ -10,7 +10,7 @@ const GraficoPastelPromedios = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:4000/api/respuestas/promedios')
+    axios.get('https://backend-sistema-evaluacion.onrender.com/respuestas/promedios')
       .then((res) => setData(res.data))
       .catch((err) => console.error("Error al cargar promedios:", err));
   }, []);

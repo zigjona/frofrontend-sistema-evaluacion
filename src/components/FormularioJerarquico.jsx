@@ -3,6 +3,8 @@ import axios from 'axios';
 import { Helmet } from 'react-helmet';
 import GraficoPorPregunta from './GraficoPorPregunta';
 import GraficoPastelPromedios from './GraficoPastelPromedios';
+import jsPDF from 'jspdf';//Para guardar en pdf
+import Swal from 'sweetalert2';
 
 
 
@@ -19,6 +21,7 @@ export default function FormularioJerarquico() {
     const [criteriosFiltrados, setCriteriosFiltrados] = useState([]);
     const [criterioId, setCriterioId] = useState('');
 
+    const [actualizarGraficas, setActualizarGraficas] = useState(false);
 
     const [indicadores, setIndicadores] = useState([]);
     const [indicadoresFiltrados, setIndicadoresFiltrados] = useState([]);
@@ -27,7 +30,18 @@ export default function FormularioJerarquico() {
     const [texto, setTexto] = useState('');
     const [preguntas, setPreguntas] = useState([]);
     const [respuestas, setRespuestas] = useState({});
+    //para obtenr a mi usuario de mi db
+    const [rolUsuario, setRolUsuario] = useState(localStorage.getItem('rol') || '');
+    const [responsable, setResponsable] = useState(localStorage.getItem('nombreUsuario') || '');
 
+    useEffect(() => {
+        const nombre = localStorage.getItem('nombreUsuario');
+        if (nombre) {
+            setResponsable(nombre); // ✅ Asegura que el valor se recargue tras login
+        }
+    }, []);
+
+//http://localhost:4000 =   https://backend-sistema-evaluacion.onrender.com
 
     //par aguardar la respuesta
     // Fragmento modificado del componente React para guardar respuestas con console.log
@@ -37,23 +51,33 @@ export default function FormularioJerarquico() {
             return;
         }
 
+        // ⚠️  Validación de responsable
+        if (!responsable) {
+            alert("El responsable no está definido. Asegúrate de haber iniciado sesión correctamente.");
+            return;
+        }
+
         const respuestasArray = Object.entries(respuestas).map(([preguntaId, datos]) => ({
             indicador: indicadorId,
             pregunta: preguntaId,
             valor: datos.valor || null,
             texto: datos.texto || null,
             porcentaje: datos.porcentaje || null,
+            responsable: responsable || 'N/A', // 👈 asegúrate de enviarlo
             fecha: new Date().toISOString()
         }));
 
         try {
-            const res = await axios.post("http://localhost:4000/api/respuestas/multiples", {
+           // const res = await axios.post("http://localhost:4000/api/respuestas/multiples", //https://backend-sistema-evaluacion.onrender.com
+                const res = await axios.post("https://backend-sistema-evaluacion.onrender.com/api/respuestas/multiples", 
+                {
                 respuestas: respuestasArray
             });
 
             if (res.status === 201) {
                 alert("✅ Todas las respuestas se guardaron correctamente.");
                 setRespuestas({}); // Limpiar después de guardar si deseas
+                setActualizarGraficas((prev) => !prev); // 🔁 Fuerza recarga de gráficas
             } else {
                 alert("⚠️ Ocurrió un problema al guardar las respuestas.");
             }
@@ -70,17 +94,17 @@ export default function FormularioJerarquico() {
     useEffect(() => {
         //Dentro del useEffect se hacen llamadas HTTP con Axios para llenar los estados con datos reales desde 
         // rutas como /api/facultades, /api/programas, etc.
-        axios.get('http://localhost:4000/api/facultades').then((res) => {
+        axios.get('https://backend-sistema-evaluacion.onrender.com/api/facultades').then((res) => {
             setFacultades(res.data);
         });
-        axios.get('http://localhost:4000/api/criterios').then((res) => {
+        axios.get('https://backend-sistema-evaluacion.onrender.com/api/criterios').then((res) => {
             setCriterios(res.data);
         });
 
 
-        axios.get('http://localhost:4000/api/indicadores?subcriterioId=...')
+        axios.get('https://backend-sistema-evaluacion.onrender.com/api/indicadores?subcriterioId=...')
 
-        axios.get('http://localhost:4000/api/usuarios').then((res) => {
+        axios.get('https://backend-sistema-evaluacion.onrender.com/api/usuarios').then((res) => {
             setUsuarios(res.data);
         });
     }, []);
@@ -89,7 +113,7 @@ export default function FormularioJerarquico() {
     useEffect(() => {
         if (facultadId) {
             axios
-                .get(`http://localhost:4000/api/criterios/porFacultad/${facultadId}`)
+                .get(`https://backend-sistema-evaluacion.onrender.com/api/criterios/porFacultad/${facultadId}`)
                 .then((res) => {
                     setCriteriosFiltrados(res.data);
                     console.log('Criterios filtrados por facultad:', res.data);
@@ -108,7 +132,7 @@ export default function FormularioJerarquico() {
             }
 
             try {
-                const res = await axios.get(`http://localhost:4000/api/indicadores?criterioId=${criterioId}`);
+                const res = await axios.get(`https://backend-sistema-evaluacion.onrender.com/api/indicadores?criterioId=${criterioId}`);
                 setIndicadoresFiltrados(res.data);
             } catch (error) {
                 console.error('Error al obtener indicadores por criterio:', error);
@@ -124,7 +148,7 @@ export default function FormularioJerarquico() {
     useEffect(() => {
         if (indicadorId) {
             axios
-                .get(`http://localhost:4000/api/preguntas/porIndicador/${indicadorId}`)
+                .get(`https://backend-sistema-evaluacion.onrender.com/api/preguntas/porIndicador/${indicadorId}`)
                 .then((res) => setPreguntas(res.data))
                 .catch((err) => {
                     console.error('Error al cargar preguntas:', err);
@@ -136,6 +160,9 @@ export default function FormularioJerarquico() {
     }, [indicadorId]);
 
 
+
+
+
     //Para guardar la pregunta que ingresa el administrador
     const guardarPregunta = async () => {
         if (!texto || !indicadorId) {
@@ -143,7 +170,7 @@ export default function FormularioJerarquico() {
             return;
         }
 
-        await axios.post('http://localhost:4000/api/preguntas', {
+        await axios.post('https://backend-sistema-evaluacion.onrender.com/api/preguntas', {
             texto,
             indicador: indicadorId,
         });
@@ -151,21 +178,76 @@ export default function FormularioJerarquico() {
         alert('Pregunta guardada');
         setTexto('');
     };
-    //Para guaradra la respuesta
+    //Para guaradra la respuesta con el responsable + pdf
 
-    const enviarRespuesta = async () => {
-        if (!indicadorId || !respuesta) {
-            return alert('Seleccione un indicador y una respuesta');
+    const guardarYDescargarPDF = async () => {
+        if (!indicadorId) {
+            Swal.fire('⚠️ Faltan datos', 'Debes seleccionar un indicador', 'warning');
+            return;
+        }
+        // ⚠️  Validación de responsable
+        if (!responsable) {
+            Swal.fire('⚠️ Sin responsable', 'Inicia sesión de nuevo para obtener el nombre del responsable', 'warning');
+            return;
+        }
+        const fechaActual = new Date().toISOString();
+
+        const respuestasArray = Object.entries(respuestas).map(([preguntaId, datos]) => ({
+            indicador: indicadorId,
+            pregunta: preguntaId,
+            valor: datos.valor || null,
+            texto: datos.texto || null,
+            porcentaje: datos.porcentaje || null,
+            fecha: fechaActual,
+            responsable: responsable
+        }));
+
+        if (respuestasArray.length === 0) {
+            Swal.fire('⚠️ Sin respuestas', 'Debes llenar al menos una respuesta', 'info');
+            return;
         }
 
-        await fetch('http://localhost:4000/api/respuestas', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ indicador: indicadorId, valor: respuesta }),
-        });
+        try {
+            Swal.fire({
+                title: 'Guardando...',
+                text: 'Por favor espera',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
 
-        alert('Respuesta guardada');
+            const res = await axios.post("https://backend-sistema-evaluacion.onrender.com/api/respuestas/multiples", {
+                respuestas: respuestasArray
+            });
+
+            if (res.status === 201) {
+                // ✅ Guardado exitoso → Generar PDF
+                const doc = new jsPDF();
+                doc.setFontSize(12);
+                doc.text(`📋 Reporte de Respuestas`, 10, 10);
+                doc.text(`Responsable: ${responsable}`, 10, 20);
+                doc.text(`Fecha: ${new Date(fechaActual).toLocaleString()}`, 10, 30);
+
+                respuestasArray.forEach((r, index) => {
+                    const offset = 40 + index * 20;
+                    doc.text(`Pregunta ID: ${r.pregunta}`, 10, offset);
+                    doc.text(`Texto: ${r.texto || '-'}`, 10, offset + 6);
+                    doc.text(`Valor: ${r.valor ?? '-'}`, 10, offset + 12);
+                    doc.text(`%: ${r.porcentaje ?? '-'}`, 10, offset + 18);
+                });
+
+                doc.save(`respuestas-${responsable}-${Date.now()}.pdf`);
+
+                Swal.fire('✅ Guardado', 'Respuestas guardadas y PDF descargado', 'success');
+                setRespuestas({});
+                setActualizarGraficas((prev) => !prev);
+            }
+        } catch (error) {
+            console.error("❌ Error al guardar:", error);
+            Swal.fire('❌ Error', 'Ocurrió un error al guardar las respuestas', 'error');
+        }
     };
+
+
 
     return (
         <div className="flex w-full min-h-screen gap-6 px-6 mt-10">
@@ -191,6 +273,43 @@ export default function FormularioJerarquico() {
                     <div className="mb-6">
                         <h2 className="text-lg font-semibold mb-4">Selección Jerárquica</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+
+
+                            {/*----------*/}
+                            {/**  <div className="md:col-span-2 ...">
+                                <label className="block mb-1 text-sm font-medium">Objetivo Táctico</label>
+                                <input type="text" className="border p-2 rounded w-full" />
+                            </div>*/}
+                            <div>
+                                <label className="block mb-1 text-sm font-medium">Actividad</label>
+                                <input type="text"
+                                    className="border p-2 rounded w-full"
+                                    value={rolUsuario}
+                                    readOnly />
+                            </div>
+                            {/**<div>
+                                <label className="block mb-1 text-sm font-medium">Presupuesto</label>
+                                <input type="number" className="border p-2 rounded w-full" />
+                            </div> */}
+                            <div>
+                                <label className="block mb-1 text-sm font-medium">Fecha de evaluacion</label>
+                                <input type="date" className="border p-2 rounded w-full" />
+                            </div>
+                            {/** <div>
+                                <label className="block mb-1 text-sm font-medium">Fecha de Fin</label>
+                                <input type="date" className="border p-2 rounded w-full" />
+                            </div> */}
+                            <div className="md:col-span-2">
+                                <label className="block mb-1 text-sm font-medium">Responsable</label>
+                                <input type="text"
+                                    className="border p-2 rounded w-full"
+                                    value={responsable}
+                                    readOnly />
+                            </div>
+
+
+
 
                             {/* Selección de Facultad */}
                             <select
@@ -363,41 +482,22 @@ export default function FormularioJerarquico() {
                                     Guardar todas las respuestas
                                 </button>
 
+
+                                {/**boton para reporte */}
+                                <button
+                                    onClick={guardarYDescargarPDF}
+                                    className="mt-4 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded"
+                                >
+                                    Guardar y Descargar PDF
+                                </button>
+
+
+
+
                             </div>
 
 
 
-                            {/*----------*/}
-                            <div className="md:col-span-2 ...">
-                                <label className="block mb-1 text-sm font-medium">Objetivo Táctico</label>
-                                <input type="text" className="border p-2 rounded w-full" />
-                            </div>
-                            <div>
-                                <label className="block mb-1 text-sm font-medium">Actividad</label>
-                                <select className="border p-2 rounded w-full">
-                                    <option>Seleccione una opción</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block mb-1 text-sm font-medium">Presupuesto</label>
-                                <input type="number" className="border p-2 rounded w-full" />
-                            </div>
-                            <div>
-                                <label className="block mb-1 text-sm font-medium">Fecha de Inicio</label>
-                                <input type="date" className="border p-2 rounded w-full" />
-                            </div>
-                            <div>
-                                <label className="block mb-1 text-sm font-medium">Fecha de Fin</label>
-                                <input type="date" className="border p-2 rounded w-full" />
-                            </div>
-                            <div className="md:col-span-2">
-                                <label className="block mb-1 text-sm font-medium">Responsable</label>
-                                <input type="text" className="border p-2 rounded w-full" />
-                            </div>
-                            <div className="md:col-span-2">
-                                <label className="block mb-1 text-sm font-medium">Fuente de Información</label>
-                                <textarea className="border p-2 rounded w-full" rows="3"></textarea>
-                            </div>
 
 
                         </div>
@@ -432,6 +532,7 @@ export default function FormularioJerarquico() {
                                 <GraficoPorPregunta
                                     preguntaId={pregunta._id}
                                     tipo={pregunta.tipoRespuesta}
+                                    actualizar={actualizarGraficas}
                                 />
                             </div>
                         ))}

@@ -41,6 +41,10 @@ const AdminLayout = () => {
            <li>
             <Link to="crearUsuarioApp" className="block px-4 py-2 hover:bg-gray-100">Crear usuario</Link>
           </li>
+           <li>
+            <Link to="respuestasRegistradasApp" className="block px-4 py-2 hover:bg-gray-100">Ver quienes ingresaron</Link>
+          </li>
+
         </ul>
       </aside>
 

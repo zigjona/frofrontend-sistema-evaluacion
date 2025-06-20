@@ -3,7 +3,7 @@ import axios from 'axios';
 
 //const AdminOpcionesRespuesta = () => {
 const AdminPanelCrearRespuesta = () => {
-
+//http://localhost:4000
 
     const [preguntas, setPreguntas] = useState([]);
     const [preguntaId, setPreguntaId] = useState('');
@@ -13,7 +13,7 @@ const AdminPanelCrearRespuesta = () => {
 
     useEffect(() => {
         // Obtener todas las preguntas
-        axios.get('http://localhost:4000/api/preguntas').then((res) => {
+        axios.get('https://backend-sistema-evaluacion.onrender.com/api/preguntas').then((res) => {
             setPreguntas(res.data);
         });
     }, []);
@@ -21,7 +21,7 @@ const AdminPanelCrearRespuesta = () => {
     useEffect(() => {
         if (preguntaId) {
             axios
-                .get(`http://localhost:4000/api/opciones/porPregunta/${preguntaId}`)
+                .get(`https://backend-sistema-evaluacion.onrender.com/api/opciones/porPregunta/${preguntaId}`)
                 .then((res) => setOpciones(res.data));
         } else {
             setOpciones([]);
@@ -31,7 +31,7 @@ const AdminPanelCrearRespuesta = () => {
     const guardarOpcion = async () => {
         if (!texto || !valor || !preguntaId) return alert('Completa todos los campos');
 
-        await axios.post('http://localhost:4000/api/opciones', {
+        await axios.post('https://backend-sistema-evaluacion.onrender.com/api/opciones', {
             texto,
             valor: Number(valor),
             pregunta: preguntaId,
@@ -39,7 +39,7 @@ const AdminPanelCrearRespuesta = () => {
 
         setTexto('');
         setValor('');
-        const res = await axios.get(`http://localhost:4000/api/opciones/porPregunta/${preguntaId}`);
+        const res = await axios.get(`https://backend-sistema-evaluacion.onrender.com/api/opciones/porPregunta/${preguntaId}`);
         setOpciones(res.data);
     };
 

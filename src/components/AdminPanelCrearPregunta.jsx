@@ -12,10 +12,10 @@ const AdminPanelCrearPregunta = () => {
   const [editandoId, setEditandoId] = useState(null);
   const [tipoRespuesta, setTipoRespuesta] = useState('');
 
-
+//http://localhost:4000
 
   useEffect(() => {//Hace una llamado al backend  para obtener todo slos indicadores i alamcenrlo en indicadores
-    axios.get('http://localhost:4000/api/indicadores').then((res) => {
+    axios.get('https://backend-sistema-evaluacion.onrender.com/api/indicadores').then((res) => {
       setIndicadores(res.data);
     });
   }, []);
@@ -30,7 +30,7 @@ const AdminPanelCrearPregunta = () => {
   }, [indicadorId]);
 
   const obtenerPreguntas = async () => {
-    const res = await axios.get(`http://localhost:4000/api/preguntas/porIndicador/${indicadorId}`);
+    const res = await axios.get(`https://backend-sistema-evaluacion.onrender.com/api/preguntas/porIndicador/${indicadorId}`);
     setPreguntas(res.data);
   };
 
@@ -63,13 +63,13 @@ const AdminPanelCrearPregunta = () => {
   }
 
   if (editandoId) {
-    await axios.put(`http://localhost:4000/api/preguntas/${editandoId}`, {
+    await axios.put(`https://backend-sistema-evaluacion.onrender.com/api/preguntas/${editandoId}`, {
       texto,
       tipoRespuesta,
     });
     setEditandoId(null);
   } else {
-    await axios.post('http://localhost:4000/api/preguntas', {
+    await axios.post('https://backend-sistema-evaluacion.onrender.com/api/preguntas', {
       texto,
       tipoRespuesta,
       indicador: indicadorId,
@@ -90,7 +90,7 @@ const AdminPanelCrearPregunta = () => {
 
   const eliminarPregunta = async (id) => {
     if (confirm("¿Estás seguro de eliminar esta pregunta?")) {
-      await axios.delete(`http://localhost:4000/api/preguntas/${id}`);
+      await axios.delete(`https://backend-sistema-evaluacion.onrender.com/api/preguntas/${id}`);
       obtenerPreguntas();
     }
   };

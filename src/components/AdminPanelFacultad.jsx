@@ -10,7 +10,7 @@ const AdminPanelFacultad = () => {
   const token = localStorage.getItem('token');
 
   const obtenerFacultades = async () => {
-    const res = await fetch('http://localhost:4000/api/facultades');
+    const res = await fetch('https://backend-sistema-evaluacion.onrender.com/api/facultades');
     const data = await res.json();
     setFacultades(data);
   };
@@ -21,7 +21,7 @@ const AdminPanelFacultad = () => {
 
   const crearFacultad = async () => {
     setMensaje('');
-    const res = await fetch('http://localhost:4000/api/facultades', {
+    const res = await fetch('https://backend-sistema-evaluacion.onrender.com/api/facultades', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -40,7 +40,7 @@ const AdminPanelFacultad = () => {
   };
   //Elimino facultad
   const eliminarFacultad = async (id) => {
-    const res = await fetch(`http://localhost:4000/api/facultades/${id}`, {
+    const res = await fetch(`https://backend-sistema-evaluacion.onrender.com/api/facultades/${id}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -56,7 +56,7 @@ const AdminPanelFacultad = () => {
   };
 //Editar o actualizar facultad
   const actualizarFacultad = async (id) => {
-    const res = await fetch(`http://localhost:4000/api/facultades/${id}`, {
+    const res = await fetch(`https://backend-sistema-evaluacion.onrender.com/api/facultades/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
