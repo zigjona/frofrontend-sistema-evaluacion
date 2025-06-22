@@ -41,7 +41,7 @@ export default function FormularioJerarquico() {
         }
     }, []);
 
-//http://localhost:4000 =   https://backend-sistema-evaluacion.onrender.com
+    //http://localhost:4000 =   https://backend-sistema-evaluacion.onrender.com
 
     //par aguardar la respuesta
     // Fragmento modificado del componente React para guardar respuestas con console.log
@@ -68,11 +68,11 @@ export default function FormularioJerarquico() {
         }));
 
         try {
-           // const res = await axios.post("http://localhost:4000/api/respuestas/multiples", //https://backend-sistema-evaluacion.onrender.com
-                const res = await axios.post("https://backend-sistema-evaluacion.onrender.com/api/respuestas/multiples", 
+            // const res = await axios.post("http://localhost:4000/api/respuestas/multiples", //https://backend-sistema-evaluacion.onrender.com
+            const res = await axios.post("https://backend-sistema-evaluacion.onrender.com/api/respuestas/multiples",
                 {
-                respuestas: respuestasArray
-            });
+                    respuestas: respuestasArray
+                });
 
             if (res.status === 201) {
                 alert("✅ Todas las respuestas se guardaron correctamente.");
@@ -471,17 +471,17 @@ export default function FormularioJerarquico() {
                                     </div>
                                 )}
                                 {/**Para hacer una impresion en linea */}
-                                <pre className="bg-gray-100 p-2 rounded text-xs overflow-x-auto">
+                                {/**   <pre className="bg-gray-100 p-2 rounded text-xs overflow-x-auto">
                                     {JSON.stringify(respuestas, null, 2)}
                                 </pre>
-
-                                <button
+                               */}
+                                {/** <button
                                     onClick={guardarRespuestas}
                                     className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
                                 >
                                     Guardar todas las respuestas
                                 </button>
-
+                                */}
 
                                 {/**boton para reporte */}
                                 <button
