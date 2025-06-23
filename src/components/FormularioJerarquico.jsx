@@ -231,19 +231,27 @@ export default function FormularioJerarquico() {
                 doc.text(`Reporte de Respuestas`, 10, 10);
                 doc.text(`Responsable: ${responsable}`, 10, 20);
                 doc.text(`Fecha: ${new Date(fechaActual).toLocaleString()}`, 10, 30);
-                doc.text(`Facultad: ${facultadNombre}`, 10, 40);
-                doc.text(`Criterio: ${criterioNombre}`, 10, 50);
+                doc.text(`Criterio: ${facultadNombre}`, 10, 40);
+                doc.text(`Indicador: ${criterioNombre}`, 10, 50);
                 doc.text(`Fuente de Información: ${indicadorNombre}`, 10, 60);
 
-                respuestasArray.forEach((r, index) => {
-                    const offset = 70 + index * 30;
+                let offset = 70;
 
-                    const preguntaTexto = preguntas.find((p) => p._id === r.pregunta)?.texto || 'Sin texto';
+                respuestasArray.forEach((r) => {
+                    const tieneTexto = r.texto?.trim();
+                    const tieneValor = typeof r.valor === 'number';
+                    const tienePorcentaje = typeof r.porcentaje === 'number';
 
-                    doc.text(`Pregunta: ${preguntaTexto}`, 10, offset);
-                    doc.text(`Texto: ${r.texto ?? '-'}`, 10, offset + 6);
-                    doc.text(`Valor: ${r.valor ?? '-'}`, 10, offset + 12);
-                    doc.text(`%: ${r.porcentaje ?? '-'}`, 10, offset + 18);
+                    if (tieneTexto || tieneValor || tienePorcentaje) {
+                        const preguntaTexto = preguntas.find((p) => p._id === r.pregunta)?.texto || 'Sin texto';
+
+                        doc.text(`Pregunta: ${preguntaTexto}`, 10, offset);
+                        if (tieneTexto) doc.text(`Texto: ${r.texto}`, 10, offset + 6);
+                        if (tieneValor) doc.text(`Valor: ${r.valor}`, 10, offset + 12);
+                        if (tienePorcentaje) doc.text(`%: ${r.porcentaje}`, 10, offset + 18);
+
+                        offset += 30; // solo aumenta si se imprimió algo
+                    }
                 });
 
                 doc.save(`respuestas-${responsable}-${Date.now()}.pdf`);
