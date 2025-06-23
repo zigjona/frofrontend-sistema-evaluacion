@@ -220,23 +220,29 @@ export default function FormularioJerarquico() {
             });
 
             if (res.status === 201) {
+                // 🟡 Obtener nombres jerárquicos
+                const indicadorNombre = indicadoresFiltrados.find((i) => i._id === indicadorId)?.nombre || 'N/A';
+                const criterioNombre = criteriosFiltrados.find((c) => c._id === criterioId)?.nombre || 'N/A';
+                const facultadNombre = facultades.find((f) => f._id === facultadId)?.nombre || 'N/A';
+
                 // ✅ Guardado exitoso → Generar PDF
-                const doc = new jsPDF();
                 doc.setFontSize(12);
                 doc.text(`Reporte de Respuestas`, 10, 10);
                 doc.text(`Responsable: ${responsable}`, 10, 20);
                 doc.text(`Fecha: ${new Date(fechaActual).toLocaleString()}`, 10, 30);
+                doc.text(`Facultad: ${facultadNombre}`, 10, 40);
+                doc.text(`Criterio: ${criterioNombre}`, 10, 50);
+                doc.text(`Fuente de Información: ${indicadorNombre}`, 10, 60);
 
                 respuestasArray.forEach((r, index) => {
-                    const offset = 40 + index * 20;
-                    //doc.text(`Pregunta : ${r.pregunta}`, 10, offset);
-                    doc.text(`Pregunta: ${r.pregunta?.texto || 'Sin texto'}`);
-                    //  doc.text(`Texto: ${r.texto || '-'}`, 10, offset + 6);
-                    if (r.valor !== undefined) doc.text(`Valor: ${r.valor}`);
-                    //  doc.text(`Valor: ${r.valor ?? '-'}`, 10, offset + 12);
-                    if (r.porcentaje !== undefined) doc.text(`%: ${r.porcentaje}`);
-                    // doc.text(`%: ${r.porcentaje ?? '-'}`, 10, offset + 18);
-                    if (r.texto) doc.text(`Texto: ${r.texto}`);
+                    const offset = 70 + index * 30;
+
+                    const preguntaTexto = preguntas.find((p) => p._id === r.pregunta)?.texto || 'Sin texto';
+
+                    doc.text(`Pregunta: ${preguntaTexto}`, 10, offset);
+                    doc.text(`Texto: ${r.texto ?? '-'}`, 10, offset + 6);
+                    doc.text(`Valor: ${r.valor ?? '-'}`, 10, offset + 12);
+                    doc.text(`%: ${r.porcentaje ?? '-'}`, 10, offset + 18);
                 });
 
                 doc.save(`respuestas-${responsable}-${Date.now()}.pdf`);
