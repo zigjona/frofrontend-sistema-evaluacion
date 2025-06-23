@@ -223,16 +223,20 @@ export default function FormularioJerarquico() {
                 // ✅ Guardado exitoso → Generar PDF
                 const doc = new jsPDF();
                 doc.setFontSize(12);
-                doc.text(`📋 Reporte de Respuestas`, 10, 10);
+                doc.text(`Reporte de Respuestas`, 10, 10);
                 doc.text(`Responsable: ${responsable}`, 10, 20);
                 doc.text(`Fecha: ${new Date(fechaActual).toLocaleString()}`, 10, 30);
 
                 respuestasArray.forEach((r, index) => {
                     const offset = 40 + index * 20;
-                    doc.text(`Pregunta ID: ${r.pregunta}`, 10, offset);
-                    doc.text(`Texto: ${r.texto || '-'}`, 10, offset + 6);
-                    doc.text(`Valor: ${r.valor ?? '-'}`, 10, offset + 12);
-                    doc.text(`%: ${r.porcentaje ?? '-'}`, 10, offset + 18);
+                    //doc.text(`Pregunta : ${r.pregunta}`, 10, offset);
+                    doc.text(`Pregunta: ${r.pregunta?.texto || 'Sin texto'}`);
+                    //  doc.text(`Texto: ${r.texto || '-'}`, 10, offset + 6);
+                    if (r.valor !== undefined) doc.text(`Valor: ${r.valor}`);
+                    //  doc.text(`Valor: ${r.valor ?? '-'}`, 10, offset + 12);
+                    if (r.porcentaje !== undefined) doc.text(`%: ${r.porcentaje}`);
+                    // doc.text(`%: ${r.porcentaje ?? '-'}`, 10, offset + 18);
+                    if (r.texto) doc.text(`Texto: ${r.texto}`);
                 });
 
                 doc.save(`respuestas-${responsable}-${Date.now()}.pdf`);
