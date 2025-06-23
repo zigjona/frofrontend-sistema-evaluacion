@@ -225,6 +225,7 @@ export default function FormularioJerarquico() {
                 const criterioNombre = criteriosFiltrados.find((c) => c._id === criterioId)?.nombre || 'N/A';
                 const facultadNombre = facultades.find((f) => f._id === facultadId)?.nombre || 'N/A';
 
+                const doc = new jsPDF(); // ✅ AQUÍ se define 'doc'
                 // ✅ Guardado exitoso → Generar PDF
                 doc.setFontSize(12);
                 doc.text(`Reporte de Respuestas`, 10, 10);
