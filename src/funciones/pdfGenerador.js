@@ -3,7 +3,7 @@
 import jsPDF from "jspdf";
 import Swal from "sweetalert2";
 import axios from "axios";
-import escudo from "../assets/escudo.png"; // Ajusta la ruta según tu proyecto
+//import escudo from "../assets/escudo.png"; // Ajusta la ruta según tu proyecto
 
 export const guardarYDescargarPDF = async ({
     indicadorId,
@@ -64,9 +64,15 @@ export const guardarYDescargarPDF = async ({
 
             const doc = new jsPDF();
 
+
+            const escudoIzquierdo = await getImageBase64("/Imagen1.jpg");
+            const escudoDerecho = await getImageBase64("/Imagen2.png");
+
+
+
             // Agrega escudos
-            doc.addImage(escudo, "PNG", 10, 10, 30, 30);     // Izquierda
-            doc.addImage(escudo, "PNG", 170, 10, 30, 30);    // Derecha
+            doc.addImage(escudoIzquierdo, "PNG", 10, 10, 30, 30);     // Izquierda
+            doc.addImage(escudoDerecho, "PNG", 170, 10, 30, 30);    // Derecha
 
             doc.setFontSize(12);
             doc.text(`Reporte de Respuestas`, 105, 50, null, null, 'center');
@@ -106,3 +112,24 @@ export const guardarYDescargarPDF = async ({
         Swal.fire('❌ Error', 'Ocurrió un error al guardar las respuestas', 'error');
     }
 };
+
+
+
+// 👇 función base64 (colócala al final del archivo o al principio)
+const getImageBase64 = (url) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "Anonymous"; // necesario para producción (Vercel)
+    img.src = url;
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+      resolve(canvas.toDataURL());
+    };
+    img.onerror = (err) => reject(err);
+  });
+};
+
