@@ -5,6 +5,8 @@ import GraficoPorPregunta from './GraficoPorPregunta';
 import GraficoPastelPromedios from './GraficoPastelPromedios';
 import jsPDF from 'jspdf';//Para guardar en pdf
 import Swal from 'sweetalert2';
+import { guardarYDescargarPDF } from '../funciones/pdfGenerator';
+
 
 
 
@@ -177,93 +179,6 @@ export default function FormularioJerarquico() {
 
         alert('Pregunta guardada');
         setTexto('');
-    };
-    //Para guaradra la respuesta con el responsable + pdf
-
-    const guardarYDescargarPDF = async () => {
-        if (!indicadorId) {
-            Swal.fire('⚠️ Faltan datos', 'Debes seleccionar un indicador', 'warning');
-            return;
-        }
-        // ⚠️  Validación de responsable
-        if (!responsable) {
-            Swal.fire('⚠️ Sin responsable', 'Inicia sesión de nuevo para obtener el nombre del responsable', 'warning');
-            return;
-        }
-        const fechaActual = new Date().toISOString();
-
-        const respuestasArray = Object.entries(respuestas).map(([preguntaId, datos]) => ({
-            indicador: indicadorId,
-            pregunta: preguntaId,
-            valor: datos.valor || null,
-            texto: datos.texto || null,
-            porcentaje: datos.porcentaje || null,
-            fecha: fechaActual,
-            responsable: responsable
-        }));
-
-        if (respuestasArray.length === 0) {
-            Swal.fire('⚠️ Sin respuestas', 'Debes llenar al menos una respuesta', 'info');
-            return;
-        }
-
-        try {
-            Swal.fire({
-                title: 'Guardando...',
-                text: 'Por favor espera',
-                allowOutsideClick: false,
-                didOpen: () => Swal.showLoading()
-            });
-
-            const res = await axios.post("https://backend-sistema-evaluacion.onrender.com/api/respuestas/multiples", {
-                respuestas: respuestasArray
-            });
-
-            if (res.status === 201) {
-                // 🟡 Obtener nombres jerárquicos
-                const indicadorNombre = indicadoresFiltrados.find((i) => i._id === indicadorId)?.nombre || 'N/A';
-                const criterioNombre = criteriosFiltrados.find((c) => c._id === criterioId)?.nombre || 'N/A';
-                const facultadNombre = facultades.find((f) => f._id === facultadId)?.nombre || 'N/A';
-
-                const doc = new jsPDF(); // ✅ AQUÍ se define 'doc'
-                // ✅ Guardado exitoso → Generar PDF
-                doc.setFontSize(12);
-                doc.text(`Reporte de Respuestas`, 10, 10);
-                doc.text(`Responsable: ${responsable}`, 10, 20);
-                doc.text(`Fecha: ${new Date(fechaActual).toLocaleString()}`, 10, 30);
-                doc.text(`Criterio: ${facultadNombre}`, 10, 40);
-                doc.text(`Indicador: ${criterioNombre}`, 10, 50);
-                doc.text(`Fuente de Información: ${indicadorNombre}`, 10, 60);
-
-                let offset = 70;
-
-                respuestasArray.forEach((r) => {
-                    const tieneTexto = r.texto?.trim();
-                    const tieneValor = typeof r.valor === 'number';
-                    const tienePorcentaje = typeof r.porcentaje === 'number';
-
-                    if (tieneTexto || tieneValor || tienePorcentaje) {
-                        const preguntaTexto = preguntas.find((p) => p._id === r.pregunta)?.texto || 'Sin texto';
-
-                        doc.text(`Pregunta: ${preguntaTexto}`, 10, offset);
-                        if (tieneTexto) doc.text(`Texto: ${r.texto}`, 10, offset + 6);
-                        if (tieneValor) doc.text(`Valor: ${r.valor}`, 10, offset + 12);
-                        if (tienePorcentaje) doc.text(`%: ${r.porcentaje}`, 10, offset + 18);
-
-                        offset += 30; // solo aumenta si se imprimió algo
-                    }
-                });
-
-                doc.save(`respuestas-${responsable}-${Date.now()}.pdf`);
-
-                Swal.fire('✅ Guardado', 'Respuestas guardadas y PDF descargado', 'success');
-                setRespuestas({});
-                setActualizarGraficas((prev) => !prev);
-            }
-        } catch (error) {
-            console.error("❌ Error al guardar:", error);
-            Swal.fire('❌ Error', 'Ocurrió un error al guardar las respuestas', 'error');
-        }
     };
 
 
@@ -504,8 +419,21 @@ export default function FormularioJerarquico() {
 
                                 {/**boton para reporte */}
                                 <button
-                                    onClick={guardarYDescargarPDF}
-                                    className="mt-4 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded"
+                                    onClick={() =>
+                                        guardarYDescargarPDF({
+                                            indicadorId,
+                                            criterioId,
+                                            facultadId,
+                                            respuestas,
+                                            responsable,
+                                            indicadoresFiltrados,
+                                            criteriosFiltrados,
+                                            facultades,
+                                            preguntas,
+                                            setRespuestas,
+                                            setActualizarGraficas,
+                                        })
+                                    }
                                 >
                                     Guardar y Descargar PDF
                                 </button>
