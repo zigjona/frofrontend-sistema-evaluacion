@@ -5,7 +5,7 @@ import GraficoPorPregunta from './GraficoPorPregunta';
 import GraficoPastelPromedios from './GraficoPastelPromedios';
 import jsPDF from 'jspdf';//Para guardar en pdf
 import Swal from 'sweetalert2';
-import { guardarYDescargarPDF } from '../funciones/pdfGenerator';
+import { guardarYDescargarPDF } from '../../funciones/pdfGenerator';
 
 
 
