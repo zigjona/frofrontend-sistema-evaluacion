@@ -34,6 +34,7 @@ export default function TablaJerarquica() {
             <th className="border px-4 py-2">Indicador</th>
             {/** <th className="border px-4 py-2">Subcriterio</th>*/}
             <th className="border px-4 py-2">Fuente de informacion</th>
+             <th className="border px-4 py-2">Pregunta por fuente de infromacion</th>
           </tr>
         </thead>
         <tbody>
