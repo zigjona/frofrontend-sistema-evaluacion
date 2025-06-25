@@ -65,8 +65,8 @@ export const guardarYDescargarPDF = async ({
             const doc = new jsPDF();
 
 
-            const escudoIzquierdo = await getImageBase64(`${window.location.origin}/Imagen1.png`);
-            const escudoDerecho = await getImageBase64(`${window.location.origin}/Imagen2.png`);
+            const escudoIzquierdo = await getImageBase64(`/Imagen1.png`);
+            const escudoDerecho = await getImageBase64(`/Imagen2.png`);
 
 
 
@@ -115,7 +115,7 @@ export const guardarYDescargarPDF = async ({
 
 
 
-// 👇 función base64 (colócala al final del archivo o al principio)
+// función base64 (colócala al final del archivo o al principio)
 const getImageBase64 = (url) => {
   return new Promise((resolve, reject) => {
     const img = new Image();
