@@ -20,12 +20,12 @@ const AdminPanelCriterio = () => {
   useEffect(() => {
     if (facultadId) {
       // Obtener programas por facultad
-      fetch(`http://localhost:4000/api/programas/porFacultad/${facultadId}`)
+      fetch(`https://backend-sistema-evaluacion.onrender.com/api/programas/porFacultad/${facultadId}`)
         .then(res => res.json())
         .then(data => setProgramas(data));
 
       // Obtener criterios por facultad
-      fetch(`http://localhost:4000/api/criterios/porFacultad/${facultadId}`)
+      fetch(`https://backend-sistema-evaluacion.onrender.com/api/criterios/porFacultad/${facultadId}`)
         .then(res => res.json())
         .then(data => setCriterios(data));
     } else {
@@ -36,19 +36,19 @@ const AdminPanelCriterio = () => {
 
 
   const obtenerFacultades = async () => {
-    const res = await fetch('http://localhost:4000/api/facultades');
+    const res = await fetch('https://backend-sistema-evaluacion.onrender.com/api/facultades');
     const data = await res.json();
     setFacultades(data);
   };
 
   const obtenerProgramas = async () => {
-    const res = await fetch('http://localhost:4000/api/programas');
+    const res = await fetch('https://backend-sistema-evaluacion.onrender.com/api/programas');
     const data = await res.json();
     setProgramas(data);
   };
 
   const obtenerCriterios = async () => {
-    const res = await fetch('http://localhost:4000/api/criterios');
+    const res = await fetch('https://backend-sistema-evaluacion.onrender.com/api/criterios');
     const data = await res.json();
     setCriterios(data);
   };
