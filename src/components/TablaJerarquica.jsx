@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
-export default function TablaJerarquica() {
 
+
+
+
+
+export default function TablaJerarquica() {
   const [datos, setDatos] = useState([]);
 
   useEffect(() => {
@@ -14,7 +18,7 @@ export default function TablaJerarquica() {
         // Suponemos que cada indicador viene poblado hasta facultad
         // (populate subcriterio → criterio → programa → facultad)
         setDatos(Array.isArray(indicadores) ? indicadores : []);
-       // setDatos(indicadores);
+        // setDatos(indicadores);
       } catch (error) {
         console.error("❌ Error al cargar datos:", error);
       }
@@ -22,6 +26,8 @@ export default function TablaJerarquica() {
 
     cargarDatos();
   }, []);
+
+
 
   return (
     <div className="overflow-x-auto p-4">
@@ -34,7 +40,7 @@ export default function TablaJerarquica() {
             <th className="border px-4 py-2">Indicador</th>
             {/** <th className="border px-4 py-2">Subcriterio</th>*/}
             <th className="border px-4 py-2">Fuente de informacion</th>
-             <th className="border px-4 py-2">Pregunta por fuente de infromacion</th>
+            <th className="border px-4 py-2">Pregunta por fuente de infromacion</th>
           </tr>
         </thead>
         <tbody>
@@ -49,12 +55,23 @@ export default function TablaJerarquica() {
               const facultadNombre = ind.criterio?.facultad?.nombre || 'N/A';
               const criterioNombre = ind.criterio?.nombre || 'N/A';
               const indicadorNombre = ind.nombre || 'N/A';
-
+              const preguntas = ind.preguntas || [];
               return (
                 <tr key={ind._id} className="bg-gray-100 hover:bg-gray-200">
                   <td className="border px-4 py-2">{facultadNombre}</td>
                   <td className="border px-4 py-2">{criterioNombre}</td>
                   <td className="border px-4 py-2">{indicadorNombre}</td>
+                  <td className="border px-4 py-2">
+                    {preguntas.length > 0 ? (
+                      <ul className="list-disc pl-5">
+                        {preguntas.map((p, idx) => (
+                          <li key={idx}>{p.texto}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <span className="text-gray-500 italic">Sin preguntas</span>
+                    )}
+                  </td>
                 </tr>
               );
             })
@@ -64,6 +81,9 @@ export default function TablaJerarquica() {
       </table>
     </div>
   );
+
+
+
 }
 
 
